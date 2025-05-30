@@ -16,12 +16,16 @@ func startRepl() {
 		if len(userInput) == 0 {
 			continue
 		}
-		command := userInput[0]
-		if command == "quit" {
-			fmt.Println("Exiting Pokedex ...")
-			break
+		commandString := userInput[0]
+		command, ok := getCommands()[commandString]
+		if !ok {
+			fmt.Printf("Unknown command: %v\n", commandString)
+			continue
 		}
-		fmt.Printf("Your command was: %v\n", userInput)
+		err := command.callback()
+		if err != nil {
+			fmt.Printf("The following error occured: %s\n", err)
+		}
 	}
 }
 
