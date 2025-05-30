@@ -3,7 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+
+	"github.com/MrBhop/Pokedex/internal/pokecache"
 )
 
 type MapResponse struct {
@@ -18,25 +21,15 @@ type Results struct {
 	URL  string `json:"url"`
 }
 
-func initializeMapConfig() *config {
-	url := "https://pokeapi.co/api/v2/location-area/"
-	return &config{
-		Next: &url,
-		Previous: nil,
-	}
-}
-
 func commandMap(config *config) error {
 	if config.Next == nil {
 		fmt.Println("You are on the last page")
 		return nil
 	}
-
-	newConfig, err := commandMapHelper(*config.Next)
+	newConfig, err := commandMapHelper(*config.Next, config.Cache)
 	if err != nil {
 		return err
 	}
-
 	config.Next = newConfig.Next
 	config.Previous = newConfig.Previous
 	return nil
@@ -47,42 +40,49 @@ func commandMapB(config *config) error {
 		fmt.Println("You are on the first page")
 		return nil
 	}
-
-	newConfig, err := commandMapHelper(*config.Previous)
+	newConfig, err := commandMapHelper(*config.Previous, config.Cache)
 	if err != nil {
 		return err
 	}
-
 	config.Next = newConfig.Next
 	config.Previous = newConfig.Previous
 	return nil
 }
 
-func commandMapHelper(url string) (config, error) {
+func get(url string, cache *pokecache.Cache) ([]byte, error) {
+	if item, exists := cache.Get(url); exists {
+		return item, nil
+	}
 	res, err := http.Get(url)
 	if err != nil {
-		return config{}, err
+		return []byte{}, err
 	}
-
 	defer res.Body.Close()
 	if res.StatusCode > 299 {
-		return config{}, fmt.Errorf("Status Code: %v", res.StatusCode)
+		return nil, fmt.Errorf("Status Code: %v", res.StatusCode)
 	}
+	content, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	cache.Add(url, content)
+	return content, nil
+}
 
+func commandMapHelper(url string, cache *pokecache.Cache) (config, error) {
+	newConfig := config{}
+	content, err := get(url, cache)
+	if err != nil {
+		return newConfig, nil
+	}
 	var mapResponse MapResponse
-	decoder := json.NewDecoder(res.Body)
-	if err := decoder.Decode(&mapResponse); err != nil {
-		return config{}, err
+	if err := json.Unmarshal(content, &mapResponse); err != nil {
+		return newConfig, err
 	}
-
 	for _, result := range mapResponse.Results {
 		fmt.Printf("%v\n", result.Name)
 	}
-
-
-	return config{
-		Next: mapResponse.Next,
-		Previous: mapResponse.Previous,
-	},
-	nil
+	newConfig.Next = mapResponse.Next
+	newConfig.Previous = mapResponse.Previous
+	return newConfig, nil
 }

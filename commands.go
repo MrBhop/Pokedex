@@ -1,5 +1,11 @@
 package main
 
+import (
+	"time"
+
+	"github.com/MrBhop/Pokedex/internal/pokecache"
+)
+
 type cliCommand struct {
 	name string
 	description string
@@ -9,6 +15,16 @@ type cliCommand struct {
 type config struct {
 	Next     *string
 	Previous *string
+	Cache    *pokecache.Cache
+}
+
+func InitializeConfig() *config {
+	url := "https://pokeapi.co/api/v2/location-area/"
+	return &config{
+		Next: &url,
+		Previous: nil,
+		Cache: pokecache.NewCache(5 * time.Second),
+	}
 }
 
 func getCommands() map[string]cliCommand{
