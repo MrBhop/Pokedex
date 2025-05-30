@@ -1,15 +1,14 @@
 package main
 
-import (
-	"os"
-	"fmt"
-	"strings"
-)
-
 type cliCommand struct {
 	name string
 	description string
-	callback func() error
+	callback func(config *config) error
+}
+
+type config struct {
+	Next     *string
+	Previous *string
 }
 
 func getCommands() map[string]cliCommand{
@@ -24,20 +23,15 @@ func getCommands() map[string]cliCommand{
 			description: "Displays a help message",
 			callback: commandHelp,
 		},
+		"map": {
+			name: "map",
+			description: "Displays the next 20 locations",
+			callback: commandMap,
+		},
+		"mapb": {
+			name: "mapb",
+			description: "Displays displays the previous 20 locatons",
+			callback: commandMapB,
+		},
 	}
-}
-
-func commandExit() error {
-	fmt.Println("Closing the Pokedex... Goodbye!")
-	os.Exit(0)
-	return nil
-}
-
-func commandHelp() error {
-	help := []string{}
-	for _, item := range getCommands() {
-		help = append(help, fmt.Sprintf("%v, %v", item.name, item.description))
-	}
-	fmt.Printf("Welcome to the Pokedex!\nUsage:\n\n%v\n", strings.Join(help, "\n"))
-	return nil
 }

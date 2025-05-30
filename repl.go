@@ -8,6 +8,7 @@ import (
 )
 
 func startRepl() {
+	mapConfig := initializeMapConfig()
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex > ")
@@ -22,7 +23,7 @@ func startRepl() {
 			fmt.Printf("Unknown command: %v\n", commandString)
 			continue
 		}
-		err := command.callback()
+		err := command.callback(mapConfig)
 		if err != nil {
 			fmt.Printf("The following error occured: %s\n", err)
 		}
