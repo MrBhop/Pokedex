@@ -1,30 +1,9 @@
-package main
-
-import (
-	"time"
-
-	"github.com/MrBhop/Pokedex/internal/pokecache"
-)
+package repl
 
 type cliCommand struct {
 	name string
 	description string
-	callback func(config *config) error
-}
-
-type config struct {
-	Next     *string
-	Previous *string
-	Cache    *pokecache.Cache
-}
-
-func InitializeConfig() *config {
-	url := "https://pokeapi.co/api/v2/location-area/"
-	return &config{
-		Next: &url,
-		Previous: nil,
-		Cache: pokecache.NewCache(5 * time.Second),
-	}
+	callback func(config *Config) error
 }
 
 func getCommands() map[string]cliCommand{
