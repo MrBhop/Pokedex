@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/MrBhop/Pokedex/internal/pokeapi"
 )
@@ -13,6 +14,15 @@ type Config struct {
 	Client   *pokeapi.PokeClient
 	Next     *string
 	Previous *string
+	CaughtPokemon map[string]pokeapi.PokemonResponse
+}
+
+func NewConfig (timeout time.Duration, cacheInterval time.Duration) *Config {
+	client := pokeapi.NewPokeClient(timeout, cacheInterval)
+	return &Config{
+		Client: &client,
+		CaughtPokemon: map[string]pokeapi.PokemonResponse{},
+	}
 }
 
 func StartRepl(config *Config) {

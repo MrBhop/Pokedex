@@ -19,8 +19,10 @@ func (p *PokeClient) GetMapResponse (url string) (MapResponse, error) {
 	return response, nil
 }
 
-func (p *PokeClient) GetLocationAreaResponse (url string) (LocationAreaResponse, error) {
+func (p *PokeClient) GetLocationAreaResponse (location string) (LocationAreaResponse, error) {
 	var response LocationAreaResponse
+
+	url := LocationAreaEndpoint + location
 
 	content, err := p.get(url)
 	if err != nil {

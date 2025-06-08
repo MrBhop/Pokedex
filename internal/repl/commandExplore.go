@@ -2,8 +2,6 @@ package repl
 
 import (
 	"fmt"
-
-	"github.com/MrBhop/Pokedex/internal/pokeapi"
 )
 
 func commandExplore(config *Config, args ...string) error {
@@ -12,9 +10,8 @@ func commandExplore(config *Config, args ...string) error {
 	}
 
 	location := args[0]
-	url := pokeapi.LocationAreaEndPoint + location
 
-	response, err := config.Client.GetLocationAreaResponse(url)
+	response, err := config.Client.GetLocationAreaResponse(location)
 	if err != nil {
 		return err
 	}

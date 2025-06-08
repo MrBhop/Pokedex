@@ -12,7 +12,7 @@ func commandMap(config *Config, _ ...string) error {
 			fmt.Println("You are on the last page")
 			return nil
 		} else {
-			firstPageUrl := pokeapi.LocationAreaEndPoint
+			firstPageUrl := pokeapi.LocationAreaEndpoint
 			config.Next = &firstPageUrl
 		}
 	}
