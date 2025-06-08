@@ -16,11 +16,6 @@ type Config struct {
 }
 
 func StartRepl(config *Config) {
-	// Initialize the first map url if the config doesn't specify one.
-	if config.Next == nil {
-		newNext := pokeapi.BaseUrl + "location-area/"
-		config.Next = &newNext
-	}
 	reader := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex > ")
@@ -37,7 +32,12 @@ func StartRepl(config *Config) {
 			continue
 		}
 
-		err := command.callback(config)
+		args := []string{}
+		if len(userInput) > 1 {
+			args = userInput[1:]
+		}
+
+		err := command.callback(config, args...)
 		if err != nil {
 			fmt.Printf("The following error occured: %s\n", err)
 		}

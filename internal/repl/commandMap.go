@@ -2,18 +2,24 @@ package repl
 
 import (
 	"fmt"
+
+	"github.com/MrBhop/Pokedex/internal/pokeapi"
 )
 
-
-func commandMap(config *Config) error {
+func commandMap(config *Config, _ ...string) error {
 	if config.Next == nil {
-		fmt.Println("You are on the last page")
-		return nil
+		if config.Previous != nil {
+			fmt.Println("You are on the last page")
+			return nil
+		} else {
+			firstPageUrl := pokeapi.LocationAreaEndPoint
+			config.Next = &firstPageUrl
+		}
 	}
 	return commandMapHelper(*config.Next, config)
 }
 
-func commandMapB(config *Config) error {
+func commandMapB(config *Config, _ ...string) error {
 	if config.Previous == nil {
 		fmt.Println("You are on the first page")
 		return nil

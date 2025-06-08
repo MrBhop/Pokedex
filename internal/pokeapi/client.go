@@ -10,6 +10,7 @@ import (
 )
 
 const BaseUrl = "https://pokeapi.co/api/v2/"
+const LocationAreaEndPoint = BaseUrl + "location-area/"
 
 type PokeClient struct {
 	client http.Client

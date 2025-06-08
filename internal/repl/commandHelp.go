@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func commandHelp(config *Config) error {
+func commandHelp(config *Config, _ ...string) error {
 	help := []string{}
 	for _, item := range getCommands() {
 		help = append(help, fmt.Sprintf("%v, %v", item.name, item.description))
